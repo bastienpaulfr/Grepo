@@ -1,0 +1,63 @@
+// Groovy and publishing plugins
+apply plugin: 'groovy'
+apply plugin: 'maven-publish'
+apply plugin: "com.jfrog.artifactory"
+
+
+// group and version used by maven-publish plugin
+group = 'fr.coppernic.utils'
+version = '0.0.2'
+
+// Code compilation dependencies
+dependencies {
+    compile localGroovy()
+    compile group:'org.eclipse.jgit', name:'org.eclipse.jgit', version:'4.4.1.201607150455-r'
+    compile 'commons-io:commons-io:2.4'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.gperfutils:gprof:0.3.1-groovy-2.4'
+}
+
+// Configuration of a maven publish
+publishing {
+    publications {
+        // name(MavenPublication)
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+// To publis to a remote location
+publishing {
+    repositories {
+        maven {
+            url "../repo"
+        }
+    }
+}
+
+if (project.properties.containsKey("artifactory_user")
+        && project.properties.containsKey("artifactory_password")) {
+// Configuration of artifactory publish
+    artifactory {
+        contextUrl = "${artifactory_contextUrl}"
+        //The base Artifactory URL if not overridden by the publisher/resolver
+        publish {
+            repository {
+                repoKey = 'libs-release-local'
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+                maven = true
+            }
+            defaults {
+                publications('maven')
+                publishArtifacts = true
+                publishPom = true
+            }
+        }
+    }
+
+// Task dependency
+    artifactoryPublish.dependsOn(['build'])
+}
