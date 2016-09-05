@@ -2,6 +2,7 @@ package fr.coppernic.utils.core
 
 import groovy.util.slurpersupport.GPathResult
 import org.eclipse.jgit.api.CheckoutCommand
+import org.eclipse.jgit.api.CreateBranchCommand
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListBranchCommand
 import org.eclipse.jgit.api.errors.JGitInternalException
@@ -65,27 +66,30 @@ class Checkouter extends Command {
         }
     }
 
-    private checkoutRemoteBranch(Git git, String revision) {
+    private static void checkoutRemoteBranch(Git git, String revision) {
         ListBranchCommand command = git.branchList();
         command.setListMode(ListBranchCommand.ListMode.REMOTE);
         List<Ref> refs = command.call();
         for (Ref r : refs) {
-            String realName = r.getName() - 'refs/remotes/'
-            String name = realName.substring(realName.lastIndexOf('/') + 1)
+            String refName = r.getName() - 'refs/remotes/'
+            String name = refName.substring(refName.lastIndexOf('/') + 1)
             if (name == revision) {
-                checkoutRef(git, realName)
+                checkoutRef(git, refName, name)
                 break;
             }
         }
     }
 
-    private checkoutRef(Git git, String rev) {
+    private static void checkoutRef(Git git, String ref, String name) {
+        //println "Checkout ref ${ref}, ${name}"
         CheckoutCommand checkout = git.checkout()
-        checkout.setName(rev)
+        checkout.setName(name).setCreateBranch(true)
+                .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.SET_UPSTREAM)
+                .setStartPoint(ref)
         checkout.call()
     }
 
-    private recoverFromLockException(Git git) {
+    private static void recoverFromLockException(Git git) {
         Repository repo = git.repository
         File lock = new File(repo.getIndexFile().absolutePath + ".lock")
         lock.delete()
