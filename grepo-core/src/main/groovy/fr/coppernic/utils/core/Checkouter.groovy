@@ -55,18 +55,25 @@ class Checkouter extends Command {
         checkout.setName(revision)
         try {
             checkout.call()
-        } catch (RefNotFoundException ignored) {
-            checkoutRemoteBranch(git, revision)
+        } catch (RefNotFoundException e) {
+            //println e.toString()
+            if(!checkoutRemoteBranch(git, revision)){
+                throw e
+            }
         } catch (JGitInternalException e) {
+            //println e.toString()
             if (e.cause instanceof LockFailedException && nbTry < 1) {
                 nbTry++
                 recoverFromLockException(git)
                 this.checkout(project)
+            } else {
+                throw e
             }
         }
     }
 
-    private static void checkoutRemoteBranch(Git git, String revision) {
+    private static boolean checkoutRemoteBranch(Git git, String revision) {
+        boolean ret = false
         ListBranchCommand command = git.branchList();
         command.setListMode(ListBranchCommand.ListMode.REMOTE);
         List<Ref> refs = command.call();
@@ -74,19 +81,21 @@ class Checkouter extends Command {
             String refName = r.getName() - 'refs/remotes/'
             String name = refName.substring(refName.lastIndexOf('/') + 1)
             if (name == revision) {
-                checkoutRef(git, refName, name)
+                ret = checkoutRef(git, refName, name)
                 break;
             }
         }
+        return ret
     }
 
-    private static void checkoutRef(Git git, String ref, String name) {
+    private static boolean checkoutRef(Git git, String ref, String name) {
         //println "Checkout ref ${ref}, ${name}"
         CheckoutCommand checkout = git.checkout()
         checkout.setName(name).setCreateBranch(true)
                 .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.SET_UPSTREAM)
                 .setStartPoint(ref)
         checkout.call()
+        return true
     }
 
     private static void recoverFromLockException(Git git) {

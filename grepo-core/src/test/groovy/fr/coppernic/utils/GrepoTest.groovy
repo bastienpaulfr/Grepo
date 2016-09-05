@@ -1,5 +1,6 @@
 package fr.coppernic.utils
 
+import org.eclipse.jgit.api.errors.RefNotFoundException
 import org.junit.*
 import org.junit.rules.TemporaryFolder
 
@@ -21,9 +22,10 @@ public class GrepoTest {
             .get("src/test/resources/manifests/manifest-fault1.xml")
     private static Path pathManifestMore = Paths
             .get("src/test/resources/manifests/manifest-more.xml")
+    private static Path pathManifestWrongBranch = Paths
+            .get("src/test/resources/manifests/manifest-wrong-branch.xml")
 
     private static Path pathWorkspace = Paths.get("build/workspace")
-    private static Path pathWorkspacePersistent = Paths.get("build/persistent")
     private static Path pathFile = Paths.get("build/file")
 
 
@@ -123,13 +125,34 @@ public class GrepoTest {
 
     @Test
     void loadAndCheckout() {
-        Grepo grepo = Grepo.Builder.newInstance(pathWorkspacePersistent, pathManifest)
+        Grepo grepo = Grepo.Builder.newInstance(pathWorkspace, pathManifest)
         grepo.loadAndCheckout()
 
         assert grepo.gitMap["Root"]
         assert grepo.gitMap["Root/Folder/RepoTest1"]
         assert grepo.gitMap["Here/RepoTest2"]
         assert grepo.gitMap["There/RepoTest3"]
+    }
+
+    @Test
+    void loadAndCheckoutTwice() {
+        Grepo grepo = Grepo.Builder.newInstance(pathWorkspace, pathManifest)
+
+        grepo.loadAndCheckout()
+
+        grepo = Grepo.Builder.newInstance(pathWorkspace, pathManifestMore)
+        grepo.loadAndCheckout()
+
+        assert grepo.gitMap["Root"]
+        assert grepo.gitMap["Root/Folder/RepoTest1"]
+        assert grepo.gitMap["Here/RepoTest2"]
+        assert grepo.gitMap["There/RepoTest3"]
+    }
+
+    @Test(expected = RefNotFoundException.class)
+    void loadAndCheckoutWrongBranch() {
+        Grepo grepo = Grepo.Builder.newInstance(pathWorkspace, pathManifestWrongBranch)
+        grepo.loadAndCheckout()
     }
 
     @Test(expected = RuntimeException.class)
