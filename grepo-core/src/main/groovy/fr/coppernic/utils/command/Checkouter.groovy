@@ -1,5 +1,7 @@
-package fr.coppernic.utils.core
+package fr.coppernic.utils.command
 
+import fr.coppernic.utils.core.Command
+import fr.coppernic.utils.core.CommandFactory
 import groovy.util.slurpersupport.GPathResult
 import org.eclipse.jgit.api.CheckoutCommand
 import org.eclipse.jgit.api.CreateBranchCommand
@@ -14,15 +16,15 @@ import org.eclipse.jgit.lib.Repository
 class Checkouter extends Command {
 
 
-    static class CheckouterFactory extends Command.CommandFactory {
+    static class CheckouterFactory extends CommandFactory {
 
-        def gitMap = null
+        Map<String, Git> gitMap = [:]
 
         static CheckouterFactory prepare() {
             return new CheckouterFactory()
         }
 
-        Command.CommandFactory setGitMap(gitMap) {
+        CommandFactory setGitMap(gitMap) {
             this.gitMap = gitMap
             this
         }
@@ -35,17 +37,17 @@ class Checkouter extends Command {
         }
     }
 
-    def gitMap = null
+    Map<String, Git> gitMap = [:]
     private int nbTry = 0
 
     private Checkouter() {}
 
     @Override
-    def execute() {
+    void run() {
         checkout(project)
     }
 
-    private checkout(GPathResult project) {
+    private void checkout(GPathResult project) {
         Git git = gitMap["${project.@local_path}"]
         String revision = "${project.@revision}".trim()
         CheckoutCommand checkout = git.checkout()
@@ -57,7 +59,7 @@ class Checkouter extends Command {
             checkout.call()
         } catch (RefNotFoundException e) {
             //println e.toString()
-            if(!checkoutRemoteBranch(git, revision)){
+            if (!checkoutRemoteBranch(git, revision)) {
                 throw e
             }
         } catch (JGitInternalException e) {
@@ -89,7 +91,6 @@ class Checkouter extends Command {
     }
 
     private static boolean checkoutRef(Git git, String ref, String name) {
-        //println "Checkout ref ${ref}, ${name}"
         CheckoutCommand checkout = git.checkout()
         checkout.setName(name).setCreateBranch(true)
                 .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.SET_UPSTREAM)

@@ -1,5 +1,9 @@
-package fr.coppernic.utils.core
+package fr.coppernic.utils.command
 
+import fr.coppernic.utils.core.Command
+import fr.coppernic.utils.core.CommandFactory
+import fr.coppernic.utils.core.FetchAble
+import fr.coppernic.utils.core.TextBuiltin
 import groovy.util.slurpersupport.GPathResult
 import org.eclipse.jgit.api.CloneCommand
 import org.eclipse.jgit.api.Git
@@ -10,7 +14,7 @@ import java.nio.file.Path
 
 class Cloner extends FetchAble {
 
-    static class ClonerFactory extends Command.CommandFactory {
+    static class ClonerFactory extends CommandFactory {
 
         static ClonerFactory prepare() {
             return new ClonerFactory()
@@ -27,7 +31,7 @@ class Cloner extends FetchAble {
     private Cloner() {}
 
     @Override
-    def execute() {
+    void run() {
         Git git
         if (!folderExists(project)) {
             git = cloneProject(project)
@@ -47,7 +51,7 @@ class Cloner extends FetchAble {
         return path
     }
 
-    private folderExists(GPathResult project) {
+    private boolean folderExists(GPathResult project) {
         Path local = getProjectPath(project)
         return local.toFile().exists()
     }
@@ -55,7 +59,6 @@ class Cloner extends FetchAble {
     private Git cloneProject(GPathResult project) {
         Path local = getProjectPath(project)
 
-        //println(local.toAbsolutePath().toString())
         URIish remote = new URIish(getGitUri(remotes["${project.@remote}"], "${project.@remote_path}"))
 
         CloneCommand clone = Git.cloneRepository()

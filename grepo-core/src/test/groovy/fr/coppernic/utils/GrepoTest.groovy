@@ -40,7 +40,7 @@ public class GrepoTest {
 
     @Test
     void constructor() {
-        Grepo grepo = Grepo.Builder.newInstance(Paths.get(""), pathManifest)
+        Grepo grepo = Grepo.Builder.create(Paths.get(""), pathManifest)
         assert grepo != null
         assert grepo.root.toString() == ""
         assert grepo.manifest != null
@@ -52,7 +52,7 @@ public class GrepoTest {
 
     @Test
     void load() {
-        Grepo grepo = Grepo.Builder.newInstance(pathWorkspace, pathManifest)
+        Grepo grepo = Grepo.Builder.create(pathWorkspace, pathManifest)
         grepo.load()
 
         File f = pathWorkspace.toFile()
@@ -73,7 +73,7 @@ public class GrepoTest {
     @Ignore
     @Test
     void loadProfiling() {
-        Grepo grepo = Grepo.Builder.newInstance(pathWorkspace, pathManifest)
+        Grepo grepo = Grepo.Builder.create(pathWorkspace, pathManifest)
 
         profile {
             grepo.load()
@@ -98,7 +98,7 @@ public class GrepoTest {
     void loadTwice() {
         load()
 
-        Grepo grepo = Grepo.Builder.newInstance(pathWorkspace, pathManifestMore)
+        Grepo grepo = Grepo.Builder.create(pathWorkspace, pathManifestMore)
         grepo.load()
 
         testFileInWorkspace("Root/README.md")
@@ -119,13 +119,13 @@ public class GrepoTest {
         File f = pathFile.toFile()
         f.createNewFile()
 
-        Grepo grepo = Grepo.Builder.newInstance(pathFile, pathManifest)
+        Grepo grepo = Grepo.Builder.create(pathFile, pathManifest)
         grepo.load()
     }
 
     @Test
     void loadAndCheckout() {
-        Grepo grepo = Grepo.Builder.newInstance(pathWorkspace, pathManifest)
+        Grepo grepo = Grepo.Builder.create(pathWorkspace, pathManifest)
         grepo.loadAndCheckout()
 
         assert grepo.gitMap["Root"]
@@ -136,11 +136,11 @@ public class GrepoTest {
 
     @Test
     void loadAndCheckoutTwice() {
-        Grepo grepo = Grepo.Builder.newInstance(pathWorkspace, pathManifest)
+        Grepo grepo = Grepo.Builder.create(pathWorkspace, pathManifest)
 
         grepo.loadAndCheckout()
 
-        grepo = Grepo.Builder.newInstance(pathWorkspace, pathManifestMore)
+        grepo = Grepo.Builder.create(pathWorkspace, pathManifestMore)
         grepo.loadAndCheckout()
 
         assert grepo.gitMap["Root"]
@@ -151,13 +151,13 @@ public class GrepoTest {
 
     @Test(expected = RefNotFoundException.class)
     void loadAndCheckoutWrongBranch() {
-        Grepo grepo = Grepo.Builder.newInstance(pathWorkspace, pathManifestWrongBranch)
+        Grepo grepo = Grepo.Builder.create(pathWorkspace, pathManifestWrongBranch)
         grepo.loadAndCheckout()
     }
 
     @Test(expected = RuntimeException.class)
     void loadFaulty() {
-        Grepo grepo = Grepo.Builder.newInstance(pathWorkspace, pathManifestFault1)
+        Grepo grepo = Grepo.Builder.create(pathWorkspace, pathManifestFault1)
         grepo.load()
 
         File f = pathWorkspace.toFile()

@@ -1,7 +1,7 @@
 package fr.coppernic.utils
 
-import fr.coppernic.utils.core.Checkouter
-import fr.coppernic.utils.core.Cloner
+import fr.coppernic.utils.command.Checkouter
+import fr.coppernic.utils.command.Cloner
 import fr.coppernic.utils.core.Command.CommandFactory
 import groovy.util.slurpersupport.GPathResult
 import org.eclipse.jgit.api.Git
@@ -10,17 +10,17 @@ import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Path
 
 /**
- * Created by bastien on 10/05/16.
+ * Class to execute all Grepo commands
  */
 public class Grepo {
 
     static class Builder {
-        static Grepo newInstance(Path root, Path manifestPath) {
+        static Grepo create(Path root, Path manifestPath) {
             GPathResult manifest = new XmlSlurper().parseText(manifestPath.toFile().text)
-            newInstance(root, manifest)
+            create(root, manifest)
         }
 
-        static Grepo newInstance(Path root, GPathResult manifest) {
+        static Grepo create(Path root, GPathResult manifest) {
             new Grepo(root, manifest)
         }
     }
@@ -35,11 +35,14 @@ public class Grepo {
 
     private Path root
     private GPathResult manifest
-    private def remoteMap = [:]
-    private def gitMap = [:]
+    private Map<String, String> remoteMap = [:]
+    private Map<String, Git> gitMap = [:]
     private boolean enableLog = true
 
-    public load() {
+    /**
+     * Clone all repositories that are defined in xml
+     */
+    public void load() {
         createRootDir()
         CommandFactory factory = Cloner.ClonerFactory.prepare()
         factory.setAfterExecute { GPathResult project, Git git ->
@@ -49,49 +52,66 @@ public class Grepo {
         //println(gitMap)
     }
 
-    public loadAndCheckout() {
+    /**
+     * Clone all repositories that are defined in xml and checkout repo to the version specified
+     * in xml file
+     */
+    public void loadAndCheckout() {
         load()
         Checkouter.CheckouterFactory factory = Checkouter.CheckouterFactory.prepare()
         factory.setGitMap(gitMap)
         forAllGitRepo(factory)
     }
 
-    private forAllGitRepo(CommandFactory factory) {
+    /**
+     * Execute the command given by the factory for each repo defined in xml
+     * @param factory Command factory
+     */
+    private void forAllGitRepo(CommandFactory factory) {
         factory.setRemotes(remoteMap)
                 .setEnableLog(enableLog)
                 .setRoot(root)
 
         // there is one root per manifest
-        factory.setProject(manifest.root).build().execute()
+        factory.setProject(manifest.root as GPathResult).build().run()
 
         // there is at most one project per manifest
-        manifest.project.each() {
-            factory.setProject(it).build().execute()
+        manifest.project.each() { GPathResult it ->
+            factory.setProject(it).build().run()
         }
-        manifest.clone.each() {
-            factory.setProject(it).build().execute()
+        manifest.clone.each() { GPathResult it ->
+            factory.setProject(it).build().run()
         }
     }
 
-    private validate() {
-        if(manifest.remote.size() == 0){
+    /**
+     * Validate xml file
+     *
+     * <ul>
+     *     <li> At least one remote node
+     *     <li> At most one project node
+     *     <li> At most one root node
+     * </ul>
+     */
+    private void validate() {
+        if (manifest.remote.size() == 0) {
             throw new RuntimeException('No remote file in xml')
         }
-        if(manifest.project.size() > 1){
+        if (manifest.project.size() > 1) {
             throw new RuntimeException("Too many 'project' node, only one is allowed")
         }
-        if(manifest.root.size() > 1){
+        if (manifest.root.size() > 1) {
             throw new RuntimeException("Too many 'root' node, only one is allowed")
         }
     }
 
-    private init() {
+    private void init() {
         manifest.remote.each {
             remoteMap["${it.@name}"] = "${it.@fetch}"
         }
     }
 
-    private createRootDir() {
+    private boolean createRootDir() {
         File fRoot = root.toFile();
         if (fRoot.exists()) {
             if (fRoot.isDirectory()) {
