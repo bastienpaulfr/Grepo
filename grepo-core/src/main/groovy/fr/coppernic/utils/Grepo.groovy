@@ -2,7 +2,7 @@ package fr.coppernic.utils
 
 import fr.coppernic.utils.command.Checkouter
 import fr.coppernic.utils.command.Cloner
-import fr.coppernic.utils.core.Command.CommandFactory
+import fr.coppernic.utils.core.CommandFactory
 import groovy.util.slurpersupport.GPathResult
 import org.eclipse.jgit.api.Git
 
@@ -49,7 +49,6 @@ public class Grepo {
             gitMap["${project.@local_path}"] = git
         }
         forAllGitRepo(factory)
-        //println(gitMap)
     }
 
     /**

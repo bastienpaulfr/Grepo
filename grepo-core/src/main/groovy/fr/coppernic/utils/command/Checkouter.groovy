@@ -13,9 +13,14 @@ import org.eclipse.jgit.errors.LockFailedException
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.lib.Repository
 
+/**
+ * Checkout command. This command checkout a repo git to a branch, tag or commit
+ */
 class Checkouter extends Command {
 
-
+    /**
+     * Factory
+     */
     static class CheckouterFactory extends CommandFactory {
 
         Map<String, Git> gitMap = [:]
@@ -37,6 +42,9 @@ class Checkouter extends Command {
         }
     }
 
+    /**
+     * Hold every {@link Git} instance for all git repo
+     */
     Map<String, Git> gitMap = [:]
     private int nbTry = 0
 
@@ -51,9 +59,8 @@ class Checkouter extends Command {
         Git git = gitMap["${project.@local_path}"]
         String revision = "${project.@revision}".trim()
         CheckoutCommand checkout = git.checkout()
-        if (enableLog) {
-            println("Checkout repo ${project.@local_path} to ${revision}")
-        }
+        logger.info("Checkout repo ${project.@local_path} to ${revision}")
+
         checkout.setName(revision)
         try {
             checkout.call()

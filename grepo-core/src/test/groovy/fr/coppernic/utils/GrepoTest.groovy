@@ -1,8 +1,12 @@
 package fr.coppernic.utils
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.LoggerContext
+import ch.qos.logback.core.util.StatusPrinter
 import org.eclipse.jgit.api.errors.RefNotFoundException
 import org.junit.*
 import org.junit.rules.TemporaryFolder
+import org.slf4j.LoggerFactory
 
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Path
@@ -32,6 +36,9 @@ public class GrepoTest {
     @Before
     void before() {
         pathWorkspace = Paths.get(temporaryFolder.root.absolutePath, "workspace")
+
+        //LoggerFactory.getLogger(Defines.GIT_LOG_NAME).setLevel(Level.TRACE)
+        LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).setLevel(Level.INFO)
     }
 
     @After
@@ -52,6 +59,11 @@ public class GrepoTest {
 
     @Test
     void load() {
+
+        // print internal state
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        StatusPrinter.print(lc);
+
         Grepo grepo = Grepo.Builder.create(pathWorkspace, pathManifest)
         grepo.load()
 
@@ -125,6 +137,7 @@ public class GrepoTest {
 
     @Test
     void loadAndCheckout() {
+
         Grepo grepo = Grepo.Builder.create(pathWorkspace, pathManifest)
         grepo.loadAndCheckout()
 

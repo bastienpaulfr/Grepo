@@ -12,6 +12,9 @@ import org.eclipse.jgit.transport.URIish
 
 import java.nio.file.Path
 
+/**
+ * Class that clones git repo
+ */
 class Cloner extends FetchAble {
 
     static class ClonerFactory extends CommandFactory {
@@ -36,7 +39,7 @@ class Cloner extends FetchAble {
         if (!folderExists(project)) {
             git = cloneProject(project)
         } else {
-            println("${getProjectPath(project)} already exists - do not clone")
+            logger.info("${getProjectPath(project)} already exists - do not clone")
             git = Git.open(getProjectPath(project).toFile())
         }
         if (afterExecute) {
@@ -69,16 +72,10 @@ class Cloner extends FetchAble {
         clone.setDirectory(local.toFile())
         clone.setURI(remote.toString())
 
-        if (enableLog) {
-            println("Clone ${remote} in ${local}")
-            clone.setProgressMonitor(new TextProgressMonitor(TextBuiltin.get().outw));
-        }
+        logger.info("Clone ${remote} in ${local}")
+        clone.setProgressMonitor(new TextProgressMonitor(TextBuiltin.get().loggerWriter));
 
         Git git = clone.call()
-
-        if (enableLog) {
-            println()
-        }
 
         return git
     }

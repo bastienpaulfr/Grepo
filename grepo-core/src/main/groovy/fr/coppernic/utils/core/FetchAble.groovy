@@ -11,11 +11,19 @@ import org.eclipse.jgit.transport.OpenSshConfig
 import org.eclipse.jgit.transport.SshTransport
 import org.eclipse.jgit.transport.Transport
 import org.eclipse.jgit.util.FS
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
+/**
+ * Base class for all fetch able commands. It configures SSH to communicate with git server
+ */
 abstract class FetchAble extends Command {
 
     static final boolean DEBUG = true
 
+    /**
+     * Custom session factory that load all ssh keys from ~/.ssh folder
+     */
     final JschConfigSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
 
         @Override
@@ -46,9 +54,9 @@ abstract class FetchAble extends Command {
             }
         }
 
-        private static void loadCustomIdentity(final JSch sch, final File privateKey) {
+        private void loadCustomIdentity(final JSch sch, final File privateKey) {
             if (DEBUG) {
-                println "load $privateKey.name"
+                logger.debug "load $privateKey.name"
             }
             if (privateKey.isFile()) {
                 try {
@@ -56,13 +64,16 @@ abstract class FetchAble extends Command {
                 } catch (JSchException ignore) {
                     // Instead, pretend the key doesn't exist.
                     if (DEBUG) {
-                        println ignore.toString()
+                        logger.debug ignore.toString()
                     }
                 }
             }
         }
     }
 
+    /**
+     * Custom callback that give custom session factory
+     */
     final TransportConfigCallback transportConfigCallback = new TransportConfigCallback() {
 
         @Override
@@ -88,7 +99,12 @@ abstract class FetchAble extends Command {
         return remote + sep + path
     }
 
+    /**
+     * Default class used by JGit to get user info
+     */
     public static class DefaultUserInfo implements UserInfo {
+
+        Logger logger = LoggerFactory.getLogger(DefaultUserInfo.class)
 
         @Override
         String getPassphrase() {
@@ -102,25 +118,25 @@ abstract class FetchAble extends Command {
 
         @Override
         boolean promptPassword(String message) {
-            println message
+            logger.info message
             return true
         }
 
         @Override
         boolean promptPassphrase(String message) {
-            println message
+            logger.info message
             return true
         }
 
         @Override
         boolean promptYesNo(String message) {
-            println message
+            logger.info message
             return true
         }
 
         @Override
         void showMessage(String message) {
-            println message
+            logger.info message
         }
     }
 }
