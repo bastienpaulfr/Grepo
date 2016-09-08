@@ -37,7 +37,6 @@ public class Grepo {
     private GPathResult manifest
     private Map<String, String> remoteMap = [:]
     private Map<String, Git> gitMap = [:]
-    private boolean enableLog = true
 
     /**
      * Clone all repositories that are defined in xml
@@ -68,7 +67,6 @@ public class Grepo {
      */
     private void forAllGitRepo(CommandFactory factory) {
         factory.setRemotes(remoteMap)
-                .setEnableLog(enableLog)
                 .setRoot(root)
 
         // there is one root per manifest

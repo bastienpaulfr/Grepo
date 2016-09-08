@@ -29,11 +29,6 @@ public abstract class CommandFactory {
         this
     }
 
-    CommandFactory setEnableLog(boolean enableLog) {
-        this.enableLog = enableLog
-        this
-    }
-
     CommandFactory setAfterExecute(Closure afterExecute) {
         this.afterExecute = afterExecute
         this
