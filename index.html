@@ -1,1 +1,104 @@
-My Page
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Grepo by bastienpaulfr</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Grepo</h1>
+      <h2 class="project-tagline">repo like tool written in Groovy</h2>
+      <a href="https://github.com/bastienpaulfr/Grepo" class="btn">View on GitHub</a>
+      <a href="https://github.com/bastienpaulfr/Grepo/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/bastienpaulfr/Grepo/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="grepo---" class="anchor" href="#grepo---" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Grepo <a href="https://travis-ci.org/bastienpaulfr/Grepo"><img src="https://travis-ci.org/bastienpaulfr/Grepo.svg?branch=master" alt="Travis Widget"></a> <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000" alt="Licence Widget"></a> <a href="https://codecov.io/gh/bastienpaulfr/Grepo"><img src="https://codecov.io/gh/bastienpaulfr/Grepo/branch/master/graph/badge.svg" alt="Codecov Widget"></a>
+</h1>
+
+<p>repo like tool written in Groovy</p>
+
+<h2>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>Android <a href="https://source.android.com/source/downloading.html">repo</a> tool has its own manner to handle git repositories. It is fine for many but is a bit complicated for the way I'm managing many git repositories.
+I was looking for a tool to handle more than 100 git repositories. I had some difficulites to find one that is satisfying. So I started developping Grepo. 
+Grepo is a library and soon a command line tool to clone, checkout and perform other git operation with many repo. It is based on an xml file that describes all repo managed by Grepo. Grepo is written in 
+<a href="http://www.groovy-lang.org/">Groovy</a>. </p>
+
+<h2>
+<a id="building" class="anchor" href="#building" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Building</h2>
+
+<pre><code>./gradlew build
+</code></pre>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<div class="highlight highlight-source-groovy"><pre><span class="pl-c">// Path to the manifest describing projects to clone</span>
+<span class="pl-k">Path</span> manifestPath <span class="pl-k">=</span> <span class="pl-k">Paths</span><span class="pl-k">.</span>get(<span class="pl-s"><span class="pl-pds">"</span>path/to/manifest<span class="pl-pds">"</span></span>)
+<span class="pl-c">// Path to the workspace containing all git repo</span>
+<span class="pl-k">Path</span> workspace <span class="pl-k">=</span> <span class="pl-k">Paths</span><span class="pl-k">.</span>get(<span class="pl-s"><span class="pl-pds">"</span>path/to/clone/repo<span class="pl-pds">"</span></span>)
+
+<span class="pl-c">// Get an instance of Grepo</span>
+<span class="pl-k">Grepo</span> grepo <span class="pl-k">=</span> <span class="pl-k">Grepo.Builder</span><span class="pl-k">.</span>create(workspace,manifestPath)
+
+<span class="pl-c">// This will clone all manifests</span>
+grepo<span class="pl-k">.</span>load()
+
+<span class="pl-c">// Clone all repo and checkout them to the revision specified in manifest</span>
+grepo<span class="pl-k">.</span>loadAndCheckout()</pre></div>
+
+<h2>
+<a id="manifest" class="anchor" href="#manifest" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Manifest</h2>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8" standalone="no" ?&gt;
+&lt;manifest&gt;
+    &lt;!-- this node represent a git server. It can be Github, Gitlab or your own server --&gt;
+    &lt;remote name="github" fetch="git@github.com"/&gt;
+    &lt;!-- Both ssh and http are supported but are limited--&gt;
+    &lt;remote name="github-http" fetch="https://github.com"/&gt;
+
+    &lt;!-- The project node is the main project of the manifest. There are at most one project per manifest.--&gt;
+    &lt;project local_path="Root/Folder/RepoTest1" remote="github-http" remote_path="bastienpaulfr/RepoTest1.git" revision="1.2.3"/&gt;
+
+    &lt;!-- The root node is a git project that will contain other sub projects.
+    It is cloned first to be able to clone other git repo inside--&gt;
+    &lt;root local_path="Root" remote="github-http" remote_path="bastienpaulfr/Grepo.git" revision="master"/&gt;
+
+    &lt;!-- Clone node is for cloning regular git repo. Number of clone node is unlimited.--&gt;
+    &lt;clone local_path="Here/RepoTest2" remote="github-http" remote_path="bastienpaulfr/RepoTest2.git" revision="9511df1bf75f67e4f2ba5b324f753bb4c1c00721"/&gt;
+    &lt;clone local_path="There/RepoTest3" remote="github-http" remote_path="bastienpaulfr/RepoTest3.git" revision="dev"/&gt;
+
+&lt;/manifest&gt;
+</code></pre>
+
+<ul>
+<li>
+<strong>local_path</strong> : local path containing git repo</li>
+<li>
+<strong>remote</strong> : Remote in which git repo is stored</li>
+<li>
+<strong>remote_path</strong> : Path to append to remote's fetch attribute</li>
+<li>
+<strong>revision</strong> : branch, tag or sha1 to checkout</li>
+</ul>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/bastienpaulfr/Grepo">Grepo</a> is maintained by <a href="https://github.com/bastienpaulfr">bastienpaulfr</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
