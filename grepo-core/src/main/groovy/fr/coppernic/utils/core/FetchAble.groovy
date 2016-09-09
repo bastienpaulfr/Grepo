@@ -6,10 +6,7 @@ import com.jcraft.jsch.Session
 import com.jcraft.jsch.UserInfo
 import org.eclipse.jgit.api.TransportCommand
 import org.eclipse.jgit.api.TransportConfigCallback
-import org.eclipse.jgit.transport.JschConfigSessionFactory
-import org.eclipse.jgit.transport.OpenSshConfig
-import org.eclipse.jgit.transport.SshTransport
-import org.eclipse.jgit.transport.Transport
+import org.eclipse.jgit.transport.*
 import org.eclipse.jgit.util.FS
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -78,8 +75,14 @@ abstract class FetchAble extends Command {
 
         @Override
         void configure(Transport transport) {
-            SshTransport sshTransport = (SshTransport) transport;
-            sshTransport.setSshSessionFactory(sshSessionFactory);
+            if (transport instanceof SshTransport) {
+                SshTransport sshTransport = (SshTransport) transport;
+                sshTransport.setSshSessionFactory(sshSessionFactory);
+            } else if (transport instanceof TransportHttp) {
+                logger.debug("Http transport is used")
+            } else {
+                logger.debug("Unhandled transport type")
+            }
         }
     }
 

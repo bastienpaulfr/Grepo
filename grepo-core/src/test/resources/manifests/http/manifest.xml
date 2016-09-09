@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<manifest>
+    <remote name="github" fetch="git@github.com"/>
+    <remote name="github-http" fetch="https://github.com"/>
+
+    <project local_path="Root/Folder/RepoTest1" remote="github-http" remote_path="bastienpaulfr/RepoTest1.git" revision="1.2.3"/>
+
+    <root local_path="Root" remote="github-http" remote_path="bastienpaulfr/Grepo.git" revision="master"/>
+
+    <clone local_path="Here/RepoTest2" remote="github-http" remote_path="bastienpaulfr/RepoTest2.git" revision="9511df1bf75f67e4f2ba5b324f753bb4c1c00721"/>
+    <clone local_path="There/RepoTest3" remote="github-http" remote_path="bastienpaulfr/RepoTest3.git" revision="dev"/>
+</manifest>

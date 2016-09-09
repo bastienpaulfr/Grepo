@@ -13,21 +13,23 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
- * Created by bastien on 10/05/16.
+ * Class to test Grepo
  */
 public class GrepoTest {
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder()
 
+    private static String prot = "http" //http or ssh
+
     private static Path pathManifest = Paths
-            .get("src/test/resources/manifests/manifest.xml")
+            .get("src/test/resources/manifests/${prot}/manifest.xml")
     private static Path pathManifestFault1 = Paths
-            .get("src/test/resources/manifests/manifest-fault1.xml")
+            .get("src/test/resources/manifests/${prot}/manifest-fault1.xml")
     private static Path pathManifestMore = Paths
-            .get("src/test/resources/manifests/manifest-more.xml")
+            .get("src/test/resources/manifests/${prot}/manifest-more.xml")
     private static Path pathManifestWrongBranch = Paths
-            .get("src/test/resources/manifests/manifest-wrong-branch.xml")
+            .get("src/test/resources/manifests/${prot}/manifest-wrong-branch.xml")
 
     private static Path pathWorkspace = Paths.get("build/workspace")
     private static Path pathFile = Paths.get("build/file")
