@@ -1,8 +1,13 @@
-// Groovy and publishing plugins
-apply plugin: 'groovy'
-apply plugin: 'maven-publish'
-apply plugin: "com.jfrog.artifactory"
+plugins {
+    id "groovy"
+    id "maven-publish"
+    id "jacoco"
+    //id 'net.saliman.cobertura' version '2.3.1'
+    id 'com.github.kt3k.coveralls' version '2.6.3'
+}
 
+// Groovy and publishing plugins
+apply plugin: "com.jfrog.artifactory"
 
 // group and version used by maven-publish plugin
 group = 'fr.coppernic.utils'
@@ -20,6 +25,22 @@ dependencies {
     testCompile 'org.gperfutils:gprof:0.3.1-groovy-2.4'
     testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
 }
+
+// Code coverage
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled = true
+    }
+}
+
+tasks.jacocoTestReport {
+    dependsOn 'check'
+}
+tasks.build {
+    dependsOn 'jacocoTestReport'
+}
+
 
 // Configuration of a maven publish
 publishing {

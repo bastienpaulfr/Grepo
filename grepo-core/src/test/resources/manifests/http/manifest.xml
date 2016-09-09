@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <manifest>
+    <!-- this node represent a git server. It can be Github, Gitlab or your own server -->
     <remote name="github" fetch="git@github.com"/>
+    <!-- Both ssh and http are supported but are limited-->
     <remote name="github-http" fetch="https://github.com"/>
 
+    <!-- The project node is the main project of the manifest. There are at most one project per manifest.-->
     <project local_path="Root/Folder/RepoTest1" remote="github-http" remote_path="bastienpaulfr/RepoTest1.git" revision="1.2.3"/>
 
+    <!-- The root node is a git project that will contain other sub projects.
+    It is cloned first to be able to clone other git repo inside-->
     <root local_path="Root" remote="github-http" remote_path="bastienpaulfr/Grepo.git" revision="master"/>
 
+    <!-- Clone node is for cloning regular git repo. Number of clone node is unlimited.-->
     <clone local_path="Here/RepoTest2" remote="github-http" remote_path="bastienpaulfr/RepoTest2.git" revision="9511df1bf75f67e4f2ba5b324f753bb4c1c00721"/>
     <clone local_path="There/RepoTest3" remote="github-http" remote_path="bastienpaulfr/RepoTest3.git" revision="dev"/>
+
 </manifest>
