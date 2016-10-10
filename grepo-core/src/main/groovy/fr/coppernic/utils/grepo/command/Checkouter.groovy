@@ -1,7 +1,7 @@
-package fr.coppernic.utils.command
+package fr.coppernic.utils.grepo.command
 
-import fr.coppernic.utils.core.Command
-import fr.coppernic.utils.core.CommandFactory
+import fr.coppernic.utils.grepo.core.Command
+import fr.coppernic.utils.grepo.core.CommandFactory
 import groovy.util.slurpersupport.GPathResult
 import org.eclipse.jgit.api.CheckoutCommand
 import org.eclipse.jgit.api.CreateBranchCommand

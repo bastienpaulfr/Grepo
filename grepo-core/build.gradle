@@ -2,7 +2,6 @@ plugins {
     id "groovy"
     id "maven-publish"
     id "jacoco"
-    //id 'net.saliman.cobertura' version '2.3.1'
     id 'com.github.kt3k.coveralls' version '2.6.3'
 }
 
@@ -11,7 +10,7 @@ apply plugin: "com.jfrog.artifactory"
 
 // group and version used by maven-publish plugin
 group = 'fr.coppernic.utils'
-version = '0.1.0'
+version = '0.1.1'
 
 // Code compilation dependencies
 dependencies {
@@ -19,12 +18,14 @@ dependencies {
     compile group:'org.eclipse.jgit', name:'org.eclipse.jgit', version:'4.4.1.201607150455-r'
     compile 'commons-io:commons-io:2.4'
     compile 'org.slf4j:slf4j-api:1.7.9'
-    //compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.gperfutils:gprof:0.3.1-groovy-2.4'
     testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
 }
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
 
 // Code coverage
 jacocoTestReport {

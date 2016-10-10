@@ -1,9 +1,9 @@
-package fr.coppernic.utils.command
+package fr.coppernic.utils.grepo.command
 
-import fr.coppernic.utils.core.Command
-import fr.coppernic.utils.core.CommandFactory
-import fr.coppernic.utils.core.FetchAble
-import fr.coppernic.utils.core.TextBuiltin
+import fr.coppernic.utils.grepo.core.TextBuiltin
+import fr.coppernic.utils.grepo.core.Command
+import fr.coppernic.utils.grepo.core.CommandFactory
+import fr.coppernic.utils.grepo.core.FetchAble
 import groovy.util.slurpersupport.GPathResult
 import org.eclipse.jgit.api.CloneCommand
 import org.eclipse.jgit.api.Git

@@ -1,4 +1,4 @@
-package fr.coppernic.utils.core
+package fr.coppernic.utils.grepo.core
 
 import groovy.util.slurpersupport.GPathResult
 

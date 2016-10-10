@@ -1,8 +1,8 @@
-package fr.coppernic.utils
+package fr.coppernic.utils.grepo
 
-import fr.coppernic.utils.command.Checkouter
-import fr.coppernic.utils.command.Cloner
-import fr.coppernic.utils.core.CommandFactory
+import fr.coppernic.utils.grepo.command.Checkouter
+import fr.coppernic.utils.grepo.command.Cloner
+import fr.coppernic.utils.grepo.core.CommandFactory
 import groovy.util.slurpersupport.GPathResult
 import org.eclipse.jgit.api.Git
 
@@ -56,6 +56,10 @@ public class Grepo {
      */
     public void loadAndCheckout() {
         load()
+        checkout()
+    }
+
+    public void checkout() {
         Checkouter.CheckouterFactory factory = Checkouter.CheckouterFactory.prepare()
         factory.setGitMap(gitMap)
         forAllGitRepo(factory)
@@ -86,7 +90,6 @@ public class Grepo {
      *
      * <ul>
      *     <li> At least one remote node
-     *     <li> At most one project node
      *     <li> At most one root node
      * </ul>
      */
@@ -94,9 +97,11 @@ public class Grepo {
         if (manifest.remote.size() == 0) {
             throw new RuntimeException('No remote file in xml')
         }
+        /*
         if (manifest.project.size() > 1) {
             throw new RuntimeException("Too many 'project' node, only one is allowed")
         }
+        */
         if (manifest.root.size() > 1) {
             throw new RuntimeException("Too many 'root' node, only one is allowed")
         }
