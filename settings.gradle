@@ -1,1 +1,1 @@
-include ':grepo-core'
+include ':grepo-core', ':grepo-tool'
