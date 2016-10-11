@@ -59,9 +59,10 @@ tasks.jacocoTestReport {
 }
 tasks.build {
     dependsOn 'jacocoTestReport'
-    dependsOn ':grepo-core:publish'
 }
-
+tasks.classes {
+    dependsOn':grepo-core:publish'
+}
 
 // Configuration of a maven publish
 publishing {
