@@ -59,6 +59,7 @@ tasks.jacocoTestReport {
 }
 tasks.build {
     dependsOn 'jacocoTestReport'
+    dependsOn ':grepo-core:publish'
 }
 
 

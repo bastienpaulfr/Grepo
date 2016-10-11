@@ -10,10 +10,11 @@ buildscript {
 }
 
 
-allprojects {
+subprojects {
 // All repositories added to resolve dependencies
     repositories {
         mavenCentral()
+        maven { url "../repo" }
     }
 
     apply plugin: 'build-announcements'
