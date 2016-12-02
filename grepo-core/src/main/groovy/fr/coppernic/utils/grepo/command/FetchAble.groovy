@@ -1,4 +1,4 @@
-package fr.coppernic.utils.grepo.core
+package fr.coppernic.utils.grepo.command
 
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.JSchException
@@ -10,7 +10,6 @@ import org.eclipse.jgit.transport.*
 import org.eclipse.jgit.util.FS
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
 /**
  * Base class for all fetch able commands. It configures SSH to communicate with git server
  */
@@ -88,18 +87,6 @@ abstract class FetchAble extends Command {
 
     void configureTransportCommand(TransportCommand cmd) {
         cmd.setTransportConfigCallback(transportConfigCallback)
-    }
-
-    static String getGitUri(String remote, String path) {
-        String sep
-        if (remote.startsWith("http")) {
-            sep = "/"
-        } else if (remote.contains("@")) {
-            sep = ":"
-        } else {
-            throw new MalformedURLException()
-        }
-        return remote + sep + path
     }
 
     /**

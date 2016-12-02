@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<manifest>
+    <remote name="github" fetch="git@github.com"/>
+
+    <project local_path="Root/Folder/RepoTest1" remote="github" remote_path="bastienpaulfr/RepoTest1.git" revision="1.2.3"/>
+</manifest>

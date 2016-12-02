@@ -22,7 +22,7 @@ class GrepoTool {
         prepareCmdLineParser()
     }
 
-    void configureLogging(){
+    static void configureLogging(){
         Logger rootLogger = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         LoggerContext loggerContext = rootLogger.getLoggerContext();
         // we are not interested in auto-configuration
@@ -51,16 +51,18 @@ class GrepoTool {
         // Create the list of options.
         cmdLine.with {
             h longOpt: 'help', 'Show usage information'
-            l longOpt: 'load', args: 1, argName: 'file.xml', 'load repo from xml file'
+            l longOpt: 'load', args: 1, argName: 'file.xml', 'Load repo from xml file'
             w longOpt: 'workspace', args: 1, argName: 'dir', 'Path to the workspace'
+            f longOpt: 'fetch', args: 1, argName: 'file.xml', 'Do a fetch --all on all repositories'
         }
     }
 
     void handleOptions(OptionAccessor opt){
         if(!opt){
-            //println("1")
-            //cmdLine.usage()
-        } else if (opt.h){
+            return
+        }
+
+        if (opt.h){
             cmdLine.usage()
         } else if (opt.l){
             load(opt)
@@ -79,6 +81,12 @@ class GrepoTool {
         Grepo grepo = Grepo.Builder.create(Paths.get(opt.w?opt.w:""), path)
         grepo.load()
         grepo.checkout()
+    }
+
+    void fetch(OptionAccessor opt){
+        Path path = Paths.get(opt.f).normalize().toAbsolutePath()
+        Grepo grepo = Grepo.Builder.create(Paths.get(opt.w?opt.w:""), path)
+        grepo.fetch()
     }
 
     static void main(String... args) {

@@ -1,4 +1,4 @@
-package fr.coppernic.utils.grepo.core
+package fr.coppernic.utils.grepo.utils
 
 import org.eclipse.jgit.util.io.ThrowingPrintWriter
 import org.slf4j.Logger

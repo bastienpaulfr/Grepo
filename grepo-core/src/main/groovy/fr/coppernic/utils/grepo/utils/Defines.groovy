@@ -1,4 +1,4 @@
-package fr.coppernic.utils.grepo.core;
+package fr.coppernic.utils.grepo.utils;
 
 /**
  * Class holding defines

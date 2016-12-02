@@ -1,21 +1,17 @@
 package fr.coppernic.utils.grepo.command
 
-import fr.coppernic.utils.grepo.core.TextBuiltin
-import fr.coppernic.utils.grepo.core.Command
-import fr.coppernic.utils.grepo.core.CommandFactory
-import fr.coppernic.utils.grepo.core.FetchAble
-import groovy.util.slurpersupport.GPathResult
+import fr.coppernic.utils.grepo.utils.FolderOp
+import fr.coppernic.utils.grepo.utils.TextBuiltin
 import org.eclipse.jgit.api.CloneCommand
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.TextProgressMonitor
 import org.eclipse.jgit.transport.URIish
 
 import java.nio.file.Path
-
 /**
  * Class that clones git repo
  */
-class Cloner extends FetchAble {
+class Cloner extends FetchAble implements FolderOp {
 
     static class ClonerFactory extends CommandFactory {
 
@@ -29,40 +25,25 @@ class Cloner extends FetchAble {
         }
     }
 
-    private Path path = null;
-
     private Cloner() {}
 
     @Override
     void run() {
         Git git
-        if (!folderExists(project)) {
-            git = cloneProject(project)
+        if (!projectFolderExists()) {
+            git = cloneProject()
         } else {
-            logger.info("${getProjectPath(project)} already exists - do not clone")
-            git = Git.open(getProjectPath(project).toFile())
+            logger.info("${getProjectPath()} already exists - do not clone")
+            git = Git.open(getProjectPath().toFile())
         }
         if (afterExecute) {
             afterExecute(project, git)
         }
     }
 
-    private Path getProjectPath(GPathResult project) {
-        if (!path) {
-            path = root.resolve("${project.@local_path}")
-        }
-        return path
-    }
-
-    private boolean folderExists(GPathResult project) {
-        Path local = getProjectPath(project)
-        return local.toFile().exists()
-    }
-
-    private Git cloneProject(GPathResult project) {
-        Path local = getProjectPath(project)
-
-        URIish remote = new URIish(getGitUri(remotes["${project.@remote}"], "${project.@remote_path}"))
+    private Git cloneProject() {
+        Path local = getProjectPath()
+        URIish remote = new URIish(project.getGitUri())
 
         CloneCommand clone = Git.cloneRepository()
 

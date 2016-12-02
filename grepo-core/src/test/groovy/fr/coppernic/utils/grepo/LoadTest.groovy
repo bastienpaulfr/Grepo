@@ -3,36 +3,21 @@ package fr.coppernic.utils.grepo
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.core.util.StatusPrinter
+import fr.coppernic.utils.grepo.core.Remote
 import org.eclipse.jgit.api.errors.RefNotFoundException
 import org.junit.*
 import org.junit.rules.TemporaryFolder
 import org.slf4j.LoggerFactory
 
 import java.nio.file.FileAlreadyExistsException
-import java.nio.file.Path
 import java.nio.file.Paths
-
 /**
  * Class to test Grepo
  */
-public class GrepoTest {
+public class LoadTest implements Resources {
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder()
-
-    private static String prot = "http" //http or ssh
-
-    private static Path pathManifest = Paths
-            .get("src/test/resources/manifests/${prot}/manifest.xml")
-    private static Path pathManifestFault1 = Paths
-            .get("src/test/resources/manifests/${prot}/manifest-fault1.xml")
-    private static Path pathManifestMore = Paths
-            .get("src/test/resources/manifests/${prot}/manifest-more.xml")
-    private static Path pathManifestWrongBranch = Paths
-            .get("src/test/resources/manifests/${prot}/manifest-wrong-branch.xml")
-
-    private static Path pathWorkspace = Paths.get("build/workspace")
-    private static Path pathFile = Paths.get("build/file")
 
 
     @Before
@@ -51,17 +36,16 @@ public class GrepoTest {
     void constructor() {
         Grepo grepo = Grepo.Builder.create(Paths.get(""), pathManifest)
         assert grepo != null
-        assert grepo.root.toString() == ""
-        assert grepo.manifest != null
-        assert grepo.manifest.name() == "manifest"
-        assert grepo.remoteMap['github'] == 'git@github.com'
-
-        assert grepo.manifest.project.size() == 1
+        assert grepo.workspace.rootPath.toString() == ""
+        assert grepo.workspace.xml != null
+        assert grepo.workspace.xml.name() == "manifest"
+        Remote r = grepo.workspace.remoteMap['github']
+        assert r.fetch == 'git@github.com'
+        assert grepo.workspace.xml.project.size() == 1
     }
 
     @Test
     void load() {
-
         // print internal state
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         StatusPrinter.print(lc);
@@ -78,10 +62,10 @@ public class GrepoTest {
         testFileInWorkspace("Here/RepoTest2/README.md")
         testFileInWorkspace("There/RepoTest3/README.md")
 
-        assert grepo.gitMap["Root"]
-        assert grepo.gitMap["Root/Folder/RepoTest1"]
-        assert grepo.gitMap["Here/RepoTest2"]
-        assert grepo.gitMap["There/RepoTest3"]
+        assert grepo.workspace.gitMap["Root"]
+        assert grepo.workspace.gitMap["Root/Folder/RepoTest1"]
+        assert grepo.workspace.gitMap["Here/RepoTest2"]
+        assert grepo.workspace.gitMap["There/RepoTest3"]
     }
 
     @Ignore
@@ -102,10 +86,10 @@ public class GrepoTest {
         testFileInWorkspace("Here/RepoTest2/README.md")
         testFileInWorkspace("There/RepoTest3/README.md")
 
-        assert grepo.gitMap["Root"]
-        assert grepo.gitMap["Root/Folder/RepoTest1"]
-        assert grepo.gitMap["Here/RepoTest2"]
-        assert grepo.gitMap["There/RepoTest3"]
+        assert grepo.workspace.gitMap["Root"]
+        assert grepo.workspace.gitMap["Root/Folder/RepoTest1"]
+        assert grepo.workspace.gitMap["Here/RepoTest2"]
+        assert grepo.workspace.gitMap["There/RepoTest3"]
     }
 
     @Test
@@ -121,11 +105,11 @@ public class GrepoTest {
         testFileInWorkspace("There/RepoTest3/README.md")
         testFileInWorkspace("Root/Folder/RepoTest2/README.md")
 
-        assert grepo.gitMap["Root"]
-        assert grepo.gitMap["Root/Folder/RepoTest1"]
-        assert grepo.gitMap["Here/RepoTest2"]
-        assert grepo.gitMap["There/RepoTest3"]
-        assert grepo.gitMap["Root/Folder/RepoTest2"]
+        assert grepo.workspace.gitMap["Root"]
+        assert grepo.workspace.gitMap["Root/Folder/RepoTest1"]
+        assert grepo.workspace.gitMap["Here/RepoTest2"]
+        assert grepo.workspace.gitMap["There/RepoTest3"]
+        assert grepo.workspace.gitMap["Root/Folder/RepoTest2"]
     }
 
     @Test(expected = FileAlreadyExistsException.class)
@@ -139,14 +123,13 @@ public class GrepoTest {
 
     @Test
     void loadAndCheckout() {
-
         Grepo grepo = Grepo.Builder.create(pathWorkspace, pathManifest)
         grepo.loadAndCheckout()
 
-        assert grepo.gitMap["Root"]
-        assert grepo.gitMap["Root/Folder/RepoTest1"]
-        assert grepo.gitMap["Here/RepoTest2"]
-        assert grepo.gitMap["There/RepoTest3"]
+        assert grepo.workspace.gitMap["Root"]
+        assert grepo.workspace.gitMap["Root/Folder/RepoTest1"]
+        assert grepo.workspace.gitMap["Here/RepoTest2"]
+        assert grepo.workspace.gitMap["There/RepoTest3"]
     }
 
     @Test
@@ -158,10 +141,10 @@ public class GrepoTest {
         grepo = Grepo.Builder.create(pathWorkspace, pathManifestMore)
         grepo.loadAndCheckout()
 
-        assert grepo.gitMap["Root"]
-        assert grepo.gitMap["Root/Folder/RepoTest1"]
-        assert grepo.gitMap["Here/RepoTest2"]
-        assert grepo.gitMap["There/RepoTest3"]
+        assert grepo.workspace.gitMap["Root"]
+        assert grepo.workspace.gitMap["Root/Folder/RepoTest1"]
+        assert grepo.workspace.gitMap["Here/RepoTest2"]
+        assert grepo.workspace.gitMap["There/RepoTest3"]
     }
 
     @Test(expected = RefNotFoundException.class)
@@ -177,12 +160,6 @@ public class GrepoTest {
 
         File f = pathWorkspace.toFile()
         assert !f.exists()
-    }
-
-    static void testFileInWorkspace(String path) {
-        File f = Paths.get(pathWorkspace.toString(), path).toFile()
-        assert f.exists()
-        assert f.isFile()
     }
 
 }

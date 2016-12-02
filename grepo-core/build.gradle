@@ -9,8 +9,8 @@ plugins {
 apply plugin: "com.jfrog.artifactory"
 
 // group and version used by maven-publish plugin
-group = 'fr.coppernic.utils'
-version = '0.1.1'
+group = parent.globalGroup
+version = parent.coreVersion
 
 // Code compilation dependencies
 dependencies {

@@ -1,20 +1,21 @@
-package fr.coppernic.utils.grepo.core
+package fr.coppernic.utils.grepo.command
 
-import groovy.util.slurpersupport.GPathResult
+import fr.coppernic.utils.grepo.core.Project
+import fr.coppernic.utils.grepo.core.Workspace
 
-import java.nio.file.Path;
-
+import java.nio.file.Path
 /**
  * Base class for command factory
  */
 public abstract class CommandFactory {
 
-    private Map remotes = null
-    private GPathResult project = null
-    private Path root = null
-    private Closure afterExecute = null
+    Map remotes = null
+    Project project = null
+    Path rootDir = null
+    Closure afterExecute = null
+    Workspace workspace = null
 
-    CommandFactory setProject(GPathResult project) {
+    CommandFactory setProject(Project project) {
         this.project = project
         this
     }
@@ -24,8 +25,8 @@ public abstract class CommandFactory {
         this
     }
 
-    CommandFactory setRoot(Path root) {
-        this.root = root
+    CommandFactory setRootDir(Path root) {
+        this.rootDir = root
         this
     }
 
@@ -34,12 +35,18 @@ public abstract class CommandFactory {
         this
     }
 
+    CommandFactory setWorkspace(Workspace workspace) {
+        this.workspace = workspace
+        this
+    }
+
     Command build() {
         Command cmd = get()
         cmd.project = project
         cmd.remotes = remotes
-        cmd.root = root
+        cmd.rootDir = rootDir
         cmd.afterExecute = afterExecute
+        cmd.workspace = workspace
         return cmd
     }
 

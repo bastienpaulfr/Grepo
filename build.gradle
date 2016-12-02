@@ -20,6 +20,10 @@ subprojects {
     apply plugin: 'build-announcements'
 }
 
+project.ext.globalGroup = 'fr.coppernic.utils'
+project.ext.coreVersion = '0.2.0'
+project.ext.toolVersion = '0.0.2'
+
 task showRepos << {
     println "All repos:"
     println repositories.collect { MavenArtifactRepository repo ->

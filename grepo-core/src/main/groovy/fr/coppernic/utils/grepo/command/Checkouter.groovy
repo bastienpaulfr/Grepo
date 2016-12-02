@@ -1,8 +1,6 @@
 package fr.coppernic.utils.grepo.command
 
-import fr.coppernic.utils.grepo.core.Command
-import fr.coppernic.utils.grepo.core.CommandFactory
-import groovy.util.slurpersupport.GPathResult
+import fr.coppernic.utils.grepo.core.Project
 import org.eclipse.jgit.api.CheckoutCommand
 import org.eclipse.jgit.api.CreateBranchCommand
 import org.eclipse.jgit.api.Git
@@ -12,7 +10,6 @@ import org.eclipse.jgit.api.errors.RefNotFoundException
 import org.eclipse.jgit.errors.LockFailedException
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.lib.Repository
-
 /**
  * Checkout command. This command checkout a repo git to a branch, tag or commit
  */
@@ -23,29 +20,16 @@ class Checkouter extends Command {
      */
     static class CheckouterFactory extends CommandFactory {
 
-        Map<String, Git> gitMap = [:]
-
         static CheckouterFactory prepare() {
             return new CheckouterFactory()
         }
 
-        CommandFactory setGitMap(gitMap) {
-            this.gitMap = gitMap
-            this
-        }
-
         @Override
         Command get() {
-            Checkouter c = new Checkouter()
-            c.setGitMap(gitMap)
-            return c
+            new Checkouter()
         }
     }
 
-    /**
-     * Hold every {@link Git} instance for all git repo
-     */
-    Map<String, Git> gitMap = [:]
     private int nbTry = 0
 
     private Checkouter() {}
@@ -55,18 +39,18 @@ class Checkouter extends Command {
         checkout(project)
     }
 
-    private void checkout(GPathResult project) {
-        Git git = gitMap["${project.@local_path}"]
-        String revision = "${project.@revision}".trim()
-        CheckoutCommand checkout = git.checkout()
-        logger.info("Checkout repo ${project.@local_path} to ${revision}")
+    private void checkout(Project project) {
+        Git git = workspace.getGit(project)
 
-        checkout.setName(revision)
+        CheckoutCommand checkout = git.checkout()
+        logger.info("Checkout repo ${project.localPath} to ${project.revision}")
+
+        checkout.setName(project.revision)
         try {
             checkout.call()
         } catch (RefNotFoundException e) {
             //println e.toString()
-            if (!checkoutRemoteBranch(git, revision)) {
+            if (!checkoutRemoteBranch(git, project.revision)) {
                 throw e
             }
         } catch (JGitInternalException e) {

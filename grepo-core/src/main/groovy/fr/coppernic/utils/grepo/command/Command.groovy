@@ -1,11 +1,11 @@
-package fr.coppernic.utils.grepo.core
+package fr.coppernic.utils.grepo.command
 
-import groovy.util.slurpersupport.GPathResult
+import fr.coppernic.utils.grepo.core.Project
+import fr.coppernic.utils.grepo.core.Workspace
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import java.nio.file.Path
-
 /**
  * Base class to all git commands. It holds common data
  */
@@ -17,11 +17,11 @@ abstract class Command implements Runnable {
     /**
      * Project xml node
      */
-    GPathResult project
+    Project project
     /**
      * Root path where all git repo are cloned
      */
-    Path root
+    Path rootDir
     /**
      * Callback called after command is executed
      */
@@ -30,4 +30,25 @@ abstract class Command implements Runnable {
      * Slf4j logger usable from child classes
      */
     Logger logger = LoggerFactory.getLogger(getClass())
+    /**
+     * Workspace
+     */
+    Workspace workspace
+    /**
+     * Cache path data
+     */
+    private Path projectPath = null;
+
+
+    public Path getProjectPath() {
+        if (!projectPath) {
+            projectPath = rootDir.resolve(project.localPath)
+        }
+        return projectPath
+    }
+
+    public boolean projectFolderExists() {
+        File f = getProjectPath().toFile()
+        return f.exists() && f.isDirectory()
+    }
 }
