@@ -13,16 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Workspace {
 
-    /*
-    private static class Holder {
-        private static Workspace instance = new Workspace()
-    }
-
-    public static Workspace get() {
-        return Holder.instance
-    }
-    */
-
     Workspace(Path root) {
         rootPath = root
     }
@@ -48,8 +38,8 @@ public class Workspace {
 
     void load(GPathResult result){
         xml = result
-        validate()
-        init()
+        validateXml()
+        parseXml()
     }
 
     boolean createRootDir() {
@@ -88,7 +78,6 @@ public class Workspace {
         // there is one root per manifest
         factory.setProject(rootProject).build().run()
 
-        // there is at most one project per manifest
         projMap.each { String k, Project p ->
             factory.setProject(p).build().run()
         }
@@ -101,7 +90,7 @@ public class Workspace {
      *     <li> At most one root node
      * </ul>
      */
-    private void validate() {
+    private void validateXml() {
         if (xml.remote.size() == 0) {
             throw new RuntimeException('No remote file in xml')
         }
@@ -110,7 +99,7 @@ public class Workspace {
         }
     }
 
-    private void init() {
+    private void parseXml() {
         clearAll()
 
         xml.remote.each {

@@ -29,22 +29,25 @@ class GrepoToolTest extends Specification {
     }
 
     static final String usage = """usage: GrepoTool.groovy [load]
- -h,--help              Show usage information
- -l,--load <file.xml>   load repo from xml file
- -w,--workspace <dir>   Path to the workspace
+ -f,--fetch <file.xml>   Do a fetch --all on all repositories
+ -h,--help               Show usage information
+ -l,--load <file.xml>    Load repo from xml file
+ -w,--workspace <dir>    Path to the workspace
 """
 
     static final String loadUsage = """error: Missing argument for option: l
 usage: GrepoTool.groovy [load]
- -h,--help              Show usage information
- -l,--load <file.xml>   load repo from xml file
- -w,--workspace <dir>   Path to the workspace
+ -f,--fetch <file.xml>   Do a fetch --all on all repositories
+ -h,--help               Show usage information
+ -l,--load <file.xml>    Load repo from xml file
+ -w,--workspace <dir>    Path to the workspace
 """
     static final String loadUsageW = """error: Missing argument for option: w
 usage: GrepoTool.groovy [load]
- -h,--help              Show usage information
- -l,--load <file.xml>   load repo from xml file
- -w,--workspace <dir>   Path to the workspace
+ -f,--fetch <file.xml>   Do a fetch --all on all repositories
+ -h,--help               Show usage information
+ -l,--load <file.xml>    Load repo from xml file
+ -w,--workspace <dir>    Path to the workspace
 """
     static final String load = """[INFO ] [Cloner] : Clone https://github.com/bastienpaulfr/Grepo.git in Root
 [INFO ] [Cloner] : Clone https://github.com/bastienpaulfr/RepoTest1.git in Root/Folder/RepoTest1
