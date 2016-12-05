@@ -4,14 +4,13 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.core.util.StatusPrinter
 import fr.coppernic.utils.grepo.core.Remote
-import org.eclipse.jgit.api.errors.RefNotFoundException
+import fr.coppernic.utils.grepo.exception.GrepoException
 import org.junit.*
 import org.junit.rules.TemporaryFolder
 import org.slf4j.LoggerFactory
 
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Paths
-
 /**
  * Class to test Grepo
  */
@@ -182,7 +181,7 @@ public class LoadTest implements Resources {
         assert grepo.workspace.gitMap["There/RepoTest3"]
     }
 
-    @Test(expected = RefNotFoundException.class)
+    @Test(expected = GrepoException.class)
     void loadAndCheckoutWrongBranch() {
         Grepo grepo = Grepo.Builder.create(pathWorkspace, pathManifestWrongBranch)
         grepo.loadAndCheckout()

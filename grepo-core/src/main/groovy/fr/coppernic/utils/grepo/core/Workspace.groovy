@@ -1,9 +1,11 @@
 package fr.coppernic.utils.grepo.core
 
 import fr.coppernic.utils.grepo.command.CommandFactory
+import fr.coppernic.utils.grepo.exception.GrepoException
 import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.lang3.StringUtils
 import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.api.errors.GitAPIException
 
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Path
@@ -78,7 +80,12 @@ public class Workspace {
     void executeCommandOnAllGitRepo(CommandFactory factory) {
         factory.setRemotes(remoteMap).setRootDir(rootPath)
         projectMap.each { String k, Project p ->
-            factory.setProject(p).build().run()
+            //Encapsulate Git exceptions in Grepo Exception before throwing them to client
+            try {
+                factory.setProject(p).build().run()
+            } catch (GitAPIException e){
+                throw new GrepoException(e)
+            }
         }
     }
     /**
