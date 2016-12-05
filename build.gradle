@@ -21,8 +21,8 @@ subprojects {
 }
 
 project.ext.globalGroup = 'fr.coppernic.utils'
-project.ext.coreVersion = '0.2.0'
-project.ext.toolVersion = '0.0.2'
+project.ext.coreVersion = '0.2.1'
+project.ext.toolVersion = '0.0.3'
 
 task showRepos << {
     println "All repos:"
