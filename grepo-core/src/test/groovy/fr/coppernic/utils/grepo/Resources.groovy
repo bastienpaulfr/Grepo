@@ -18,6 +18,8 @@ public trait Resources {
             .get("src/test/resources/manifests/${prot}/manifest-more.xml")
     Path pathManifestWrongBranch = Paths
             .get("src/test/resources/manifests/${prot}/manifest-wrong-branch.xml")
+    Path pathManifestLevel = Paths
+            .get("src/test/resources/manifests/${prot}/manifest-level.xml")
     Path pathManifestProject = Paths
             .get("src/test/resources/manifests/other/manifest-project.xml")
 
