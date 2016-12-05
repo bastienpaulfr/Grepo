@@ -61,11 +61,13 @@ public class LoadTest implements Resources {
         testFileInWorkspace("Root/Folder/RepoTest1/README.md")
         testFileInWorkspace("Here/RepoTest2/README.md")
         testFileInWorkspace("There/RepoTest3/README.md")
+        testFileInWorkspace("Here/RepoTest3/README.md")
 
         assert grepo.workspace.gitMap["Root"]
         assert grepo.workspace.gitMap["Root/Folder/RepoTest1"]
         assert grepo.workspace.gitMap["Here/RepoTest2"]
         assert grepo.workspace.gitMap["There/RepoTest3"]
+        assert grepo.workspace.gitMap["Here/RepoTest3"]
     }
 
     @Ignore
@@ -85,11 +87,13 @@ public class LoadTest implements Resources {
         testFileInWorkspace("Root/Folder/RepoTest1/README.md")
         testFileInWorkspace("Here/RepoTest2/README.md")
         testFileInWorkspace("There/RepoTest3/README.md")
+        testFileInWorkspace("Here/RepoTest3/README.md")
 
         assert grepo.workspace.gitMap["Root"]
         assert grepo.workspace.gitMap["Root/Folder/RepoTest1"]
         assert grepo.workspace.gitMap["Here/RepoTest2"]
         assert grepo.workspace.gitMap["There/RepoTest3"]
+        assert grepo.workspace.gitMap["Here/RepoTest3"]
     }
 
     @Test
@@ -104,6 +108,7 @@ public class LoadTest implements Resources {
         testFileInWorkspace("Here/RepoTest2/README.md")
         testFileInWorkspace("There/RepoTest3/README.md")
         testFileInWorkspace("Root/Folder/RepoTest2/README.md")
+        testFileInWorkspace("Here/RepoTest3/README.md")
 
         assert grepo.workspace.gitMap["Root"]
         assert grepo.workspace.gitMap["Root/Folder/RepoTest1"]
@@ -130,6 +135,7 @@ public class LoadTest implements Resources {
         assert grepo.workspace.gitMap["Root/Folder/RepoTest1"]
         assert grepo.workspace.gitMap["Here/RepoTest2"]
         assert grepo.workspace.gitMap["There/RepoTest3"]
+        assert grepo.workspace.gitMap["Here/RepoTest3"]
     }
 
     @Test

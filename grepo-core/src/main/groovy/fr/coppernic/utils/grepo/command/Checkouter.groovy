@@ -72,7 +72,7 @@ class Checkouter extends Command {
         List<Ref> refs = command.call();
         for (Ref r : refs) {
             String refName = r.getName() - 'refs/remotes/'
-            String name = refName.substring(refName.lastIndexOf('/') + 1)
+            String name = refName.substring(refName.indexOf('/') + 1)
             if (name == revision) {
                 ret = checkoutRef(git, refName, name)
                 break;
