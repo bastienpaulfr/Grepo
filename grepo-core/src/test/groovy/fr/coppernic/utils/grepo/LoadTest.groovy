@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Paths
+
 /**
  * Class to test Grepo
  */
@@ -68,6 +69,34 @@ public class LoadTest implements Resources {
         assert grepo.workspace.gitMap["Here/RepoTest2"]
         assert grepo.workspace.gitMap["There/RepoTest3"]
         assert grepo.workspace.gitMap["Here/RepoTest3"]
+    }
+
+    @Test
+    void loadLevel() {
+        // print internal state
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        StatusPrinter.print(lc);
+
+        Grepo grepo = Grepo.Builder.create(pathWorkspace, pathManifestLevel)
+        grepo.load()
+
+        File f = pathWorkspace.toFile()
+        assert f.exists()
+        assert f.isDirectory()
+
+        testFileInWorkspace("One/RepoTest2/README.md")
+        testFileInWorkspace("One/RepoTest3/README.md")
+        testFileInWorkspace("One/Two/RepoTest2/README.md")
+        testFileInWorkspace("One/Two/RepoTest3/README.md")
+        testFileInWorkspace("One/Two/Three/RepoTest2/README.md")
+        testFileInWorkspace("One/Two/Three/RepoTest3/README.md")
+
+        assert grepo.workspace.gitMap["One/RepoTest2"]
+        assert grepo.workspace.gitMap["One/RepoTest3"]
+        assert grepo.workspace.gitMap["One/Two/RepoTest2"]
+        assert grepo.workspace.gitMap["One/Two/RepoTest3"]
+        assert grepo.workspace.gitMap["One/Two/Three/RepoTest2"]
+        assert grepo.workspace.gitMap["One/Two/Three/RepoTest3"]
     }
 
     @Ignore

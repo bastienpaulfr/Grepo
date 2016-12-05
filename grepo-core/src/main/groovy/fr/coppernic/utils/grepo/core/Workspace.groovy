@@ -2,14 +2,18 @@ package fr.coppernic.utils.grepo.core
 
 import fr.coppernic.utils.grepo.command.CommandFactory
 import groovy.util.slurpersupport.GPathResult
+import org.apache.commons.lang3.StringUtils
 import org.eclipse.jgit.api.Git
 
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Path
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
- * Created by bastien on 03/11/16.
+ * Workspace class.
+ *
+ * Class holding all workspace git repo
  */
 public class Workspace {
 
@@ -24,19 +28,18 @@ public class Workspace {
     /**
      * Hold every {@link org.eclipse.jgit.api.Git} instance for all git repo
      */
-    private Map<String, Git> gitMap = [:] as ConcurrentHashMap<String, Git>
-    private Map<String, Project> projMap = [:] as ConcurrentHashMap<String, Project>
-    private Project rootProject
+    private Map<String, Git> gitMap = new ConcurrentHashMap<String, Git>()
+    private Map<String, Project> projectMap = new ConcurrentSkipListMap<String, Project>(new ProjectPathLevelComparator())
 
-    void load(Path p){
+    void load(Path p) {
         load(p.toFile())
     }
 
-    void load(File f){
+    void load(File f) {
         load(new XmlSlurper().parseText(f.text))
     }
 
-    void load(GPathResult result){
+    void load(GPathResult result) {
         xml = result
         validateXml()
         parseXml()
@@ -55,13 +58,13 @@ public class Workspace {
         }
     }
 
-    void setGit(Project p, Git g){
+    void setGit(Project p, Git g) {
         gitMap[p.localPath] = g
     }
 
-    Git getGit(Project p){
+    Git getGit(Project p) {
         Git g = gitMap[p.localPath]
-        if(!g){
+        if (!g) {
             g = Git.open(rootPath.resolve(p.localPath).toFile())
             gitMap[p.localPath] = g
         }
@@ -74,11 +77,7 @@ public class Workspace {
      */
     void executeCommandOnAllGitRepo(CommandFactory factory) {
         factory.setRemotes(remoteMap).setRootDir(rootPath)
-
-        // there is one root per manifest
-        factory.setProject(rootProject).build().run()
-
-        projMap.each { String k, Project p ->
+        projectMap.each { String k, Project p ->
             factory.setProject(p).build().run()
         }
     }
@@ -108,20 +107,32 @@ public class Workspace {
         }
         xml.project.each {
             Project p = Project.from(it, remoteMap)
-            projMap[p.localPath] = p
+            projectMap[p.localPath] = p
         }
         xml.clone.each {
             Project p = Project.from(it, remoteMap)
-            projMap[p.localPath] = p
+            projectMap[p.localPath] = p
         }
         xml.root.each {
-            rootProject = Project.from(it, remoteMap)
+            Project p = Project.from(it, remoteMap)
+            projectMap[p.localPath] = p
         }
     }
 
-    private void clearAll(){
+    private void clearAll() {
         remoteMap.clear()
-        projMap.clear()
-        rootProject = null
+        projectMap.clear()
+    }
+
+    static class ProjectPathLevelComparator implements Comparator<String> {
+
+        @Override
+        int compare(String o1, String o2) {
+            int c1 = StringUtils.countMatches(o1, File.separatorChar)
+            int c2 = StringUtils.countMatches(o2, File.separatorChar)
+
+            int ret = c1 - c2
+            return ret ? ret : o1.compareTo(o2)
+        }
     }
 }

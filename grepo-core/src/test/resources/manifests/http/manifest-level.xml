@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<manifest>
+    <!-- this node represent a git server. It can be Github, Gitlab or your own server -->
+    <remote name="github" fetch="git@github.com"/>
+    <!-- Both ssh and http are supported but are limited-->
+    <remote name="github-http" fetch="https://github.com"/>
+
+    <!-- Clone node is for cloning regular git repo. Number of clone node is unlimited.-->
+    <clone local_path="One/RepoTest2" remote="github-http" remote_path="bastienpaulfr/RepoTest2.git" revision="master"/>
+    <clone local_path="One/RepoTest3" remote="github-http" remote_path="bastienpaulfr/RepoTest3.git" revision="master"/>
+    <clone local_path="One/Two/RepoTest2" remote="github-http" remote_path="bastienpaulfr/RepoTest2.git" revision="master"/>
+    <clone local_path="One/Two/RepoTest3" remote="github-http" remote_path="bastienpaulfr/RepoTest3.git" revision="master"/>
+    <clone local_path="One/Two/Three/RepoTest2" remote="github-http" remote_path="bastienpaulfr/RepoTest2.git" revision="master"/>
+    <clone local_path="One/Two/Three/RepoTest3" remote="github-http" remote_path="bastienpaulfr/RepoTest3.git" revision="master"/>
+</manifest>

@@ -17,6 +17,7 @@ dependencies {
     compile localGroovy()
     compile group:'org.eclipse.jgit', name:'org.eclipse.jgit', version:'4.4.1.201607150455-r'
     compile 'commons-io:commons-io:2.4'
+    compile 'org.apache.commons:commons-lang3:3.5'
     compile 'org.slf4j:slf4j-api:1.7.9'
 
     testCompile 'junit:junit:4.12'
